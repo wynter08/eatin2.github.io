@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>University Schools & Departments</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+  :root {
+    --cream: #FFF8F0;
+    --beige: #F5E6D3;
+    --light-blue: #D4E6F1;
+    --soft-blue: #A9CCE3;
+    --sage: #B2C9AD;
+    --soft-green: #D5E8D4;
+    --muted-teal: #8FB8B0;
+    --warm-gray: #9E9590;
+    --dark-text: #2C3E50;
+    --medium-text: #5D6D7E;
+    --accent: #6B9080;
+    --border-light: #E8DDD3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', 'Times New Roman', Times, serif;
+    background: var(--cream);
+    color: var(--dark-text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Stationery Side Graphics */
+  .stationery-left, .stationery-right {
+    position: fixed;
+    top: 0;
+    width: 60px;
+    height: 100%;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .stationery-left { left: 0; }
+  .stationery-right { right: 0; }
+
+  .stationery-left::before, .stationery-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--sage), var(--soft-blue), var(--sage), transparent);
+  }
+  .stationery-left::before { right: 0; }
+  .stationery-right::before { left: 0; }
+
+  .stationery-left::after, .stationery-right::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    opacity: 0.15;
+  }
+  .stationery-left::after {
+    right: 10px;
+    background: radial-gradient(circle, var(--sage), transparent);
+  }
+  .stationery-right::after {
+    left: 10px;
+    background: radial-gradient(circle, var(--soft-blue), transparent);
+  }
+
+  .leaf-accent {
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 99;
+  }
+  .leaf-accent.top-left {
+    top: 40px;
+    left: 20px;
+    background: radial-gradient(ellipse at 30% 50%, var(--sage), transparent 70%);
+  }
+  .leaf-accent.top-right {
+    top: 40px;
+    right: 20px;
+    background: radial-gradient(ellipse at 70% 50%, var(--soft-blue), transparent 70%);
+  }
+  .leaf-accent.mid-left {
+    top: 45%;
+    left: 10px;
+    background: radial-gradient(ellipse at 40% 50%, var(--muted-teal), transparent 70%);
+  }
+  .leaf-accent.mid-right {
+    top: 55%;
+    right: 10px;
+    background: radial-gradient(ellipse at 60% 50%, var(--light-blue), transparent 70%);
+  }
+
+  /* Navigation */
+  .nav {
+    position: sticky;
+    top: 0;
+    background: rgba(255,248,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-light);
+    z-index: 200;
+    padding: 14px 80px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    justify-content: center;
+  }
+  .nav a {
+    text-decoration: none;
+    color: var(--medium-text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  .nav a:hover, .nav a.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* Page Sections */
+  .page {
+    min-height: 100vh;
+    padding: 60px 100px;
+    position: relative;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 8px;
+  }
+  .page-header .subtitle {
+    font-size: 1rem;
+    color: var(--medium-text);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .page-header .divider {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(to right, var(--sage), var(--soft-blue));
+    margin: 16px auto 0;
+  }
+
+  /* Section backgrounds */
+  .section-medicine { background: linear-gradient(135deg, var(--cream) 0%, rgba(212,230,241,0.2) 100%); }
+  .section-engineering { background: linear-gradient(135deg, var(--cream) 0%, rgba(178,201,173,0.2) 100%); }
+  .section-law { background: linear-gradient(135deg, var(--cream) 0%, rgba(213,232,212,0.2) 100%); }
+
+  /* PAGE 1: Schools & Departments List */
+  .schools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .school-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px 24px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .school-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .school-card .number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--sage);
+    opacity: 0.5;
+    margin-bottom: 4px;
+  }
+  .school-card h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .school-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .school-card ul li {
+    font-size: 0.88rem;
+    color: var(--medium-text);
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .school-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+  .school-card.medicine ul li::before { background: var(--soft-blue); }
+  .school-card.engineering ul li::before { background: var(--sage); }
+  .school-card.law ul li::before { background: var(--muted-teal); }
+  .school-card.business ul li::before { background: #C9B896; }
+  .school-card.architecture ul li::before { background: #B8A99A; }
+  .school-card.data ul li::before { background: #A3B5C7; }
+  .school-card.education ul li::before { background: #C4B5A0; }
+  .school-card.humanities ul li::before { background: #B0A8B8; }
+  .school-card.communications ul li::before { background: #9DB5B2; }
+  .school-card.theology ul li::before { background: #C2BBA8; }
+  .school-card.policy ul li::before { background: #8FB0C4; }
+  .school-card.arts ul li::before { background: #BBA8A0; }
+  .school-card.nursing ul li::before { background: #A0C0B8; }
+  .school-card.biological ul li::before { background: #88B898; }
+
+  /* PAGE 2: Focus Sections */
+  .focus-section {
+    max-width: 1000px;
+    margin: 0 auto 48px;
+  }
+  .school-focus {
+    background: white;
+    border-radius: 14px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .school-focus h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid;
+  }
+  .school-focus.medicine h2 { color: #4A7C9B; border-color: var(--soft-blue); }
+  .school-focus.engineering h2 { color: #5A8A6A; border-color: var(--sage); }
+  .school-focus.law h2 { color: #6B8E85; border-color: var(--muted-teal); }
+
+  .dept-block {
+    margin-bottom: 28px;
+    padding: 20px 24px;
+    background: var(--cream);
+    border-radius: 10px;
+    border-left: 3px solid;
+  }
+  .dept-block.medicine { border-color: var(--soft-blue); }
+  .dept-block.engineering { border-color: var(--sage); }
+  .dept-block.law { border-color: var(--muted-teal); }
+
+  .dept-block h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--dark-text);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .info-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px 18px;
+    border: 1px solid var(--border-light);
+  }
+  .info-card h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .info-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .info-card ul li {
+    font-size: 0.88rem;
+    color: var(--medium-text);
+    padding: 2px 0 2px 12px;
+    position: relative;
+  }
+  .info-card ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--warm-gray);
+    font-size: 0.75rem;
+  }
+
+  /* PAGE 3: Comparison Table */
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    font-size: 0.88rem;
+  }
+  .comparison-table thead th {
+    background: var(--dark-text);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .comparison-table tbody tr {
+    border-bottom: 1px solid var(--border-light);
+  }
+  .comparison-table tbody tr:nth-child(even) {
+    background: rgba(178,201,173,0.06);
+  }
+  .comparison-table tbody td {
+    padding: 14px 16px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .comparison-table tbody td:first-child {
+    font-weight: 600;
+    color: var(--dark-text);
+    white-space: nowrap;
+  }
+  .category-header td {
+    background: var(--light-blue) !important;
+    font-weight: 700 !important;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.95rem !important;
+    color: var(--dark-text) !important;
+    letter-spacing: 0.5px;
+    padding: 12px 16px !important;
+  }
+
+  /* PAGE 4: Reflection */
+  .reflection-container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  .reflection-card {
+    background: white;
+    border-radius: 14px;
+    padding: 48px 52px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .reflection-card::before {
+    content: '\201C';
+    position: absolute;
+    top: 16px;
+    left: 28px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 5rem;
+    color: var(--sage);
+    opacity: 0.15;
+    line-height: 1;
+  }
+  .reflection-card p {
+    font-size: 1.02rem;
+    line-height: 1.9;
+    color: var(--medium-text);
+    margin-bottom: 20px;
+    text-indent: 2em;
+  }
+  .reflection-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* PAGE 5: Sources */
+  .sources-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .source-list {
+    columns: 2;
+    column-gap: 40px;
+    list-style: none;
+    padding: 0;
+  }
+  .source-list li {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light);
+    break-inside: avoid;
+    color: var(--medium-text);
+  }
+  .source-list li a {
+    color: var(--accent);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .source-list li a:hover {
+    text-decoration: underline;
+    color: var(--muted-teal);
+  }
+
+  /* Download Button */
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    transition: background 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+  .download-btn:hover {
+    background: var(--dark-text);
+  }
+  .download-actions {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* Scroll anchors */
+  .section-anchor {
+    display: block;
+    position: relative;
+    top: -70px;
+    visibility: hidden;
+  }
+
+  @media print {
+    .nav, .download-actions { display: none; }
+    .page { padding: 30px 50px; break-after: page; }
+    .stationery-left, .stationery-right, .leaf-accent { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Decorative Side Elements -->
+<div class="stationery-left"></div>
+<div class="stationery-right"></div>
+<div class="leaf-accent top-left"></div>
+<div class="leaf-accent top-right"></div>
+<div class="leaf-accent mid-left"></div>
+<div class="leaf-accent mid-right"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="#page1" class="active">Schools</a>
+  <a href="#page2">Focus Areas</a>
+  <a href="#page3">Comparison</a>
+  <a href="#page4">Reflection</a>
+  <a href="#page5">Sources</a>
+</nav>
+
+<!-- ==================== PAGE 1: SCHOOLS & DEPARTMENTS ==================== -->
+<span class="section-anchor" id="page1"></span>
+<section class="page" style="background: linear-gradient(180deg, var(--cream) 0%, rgba(212,230,241,0.12) 100%);">
+  <div class="page-header">
+    <h1>Schools &amp; Departments</h1>
+    <p class="subtitle">A Comprehensive Overview of University Academic Structure</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="schools-grid">
+
+    <div class="school-card medicine">
+      <div class="number">01</div>
+      <h3>School of Medicine</h3>
+      <ul>
+        <li>Internal Medicine</li>
+        <li>Surgery</li>
+        <li>Neuroscience</li>
+        <li>Biochemistry &amp; Molecular Genetics</li>
+      </ul>
+    </div>
+
+    <div class="school-card engineering">
+      <div class="number">02</div>
+      <h3>School of Engineering &amp; Applied Sciences</h3>
+      <ul>
+        <li>Computer Science</li>
+        <li>Biomedical Engineering</li>
+        <li>Mechanical Engineering</li>
+        <li>Electrical &amp; Computer Engineering</li>
+      </ul>
+    </div>
+
+    <div class="school-card law">
+      <div class="number">03</div>
+      <h3>School of Law</h3>
+      <ul>
+        <li>Constitutional Law</li>
+        <li>Corporate &amp; Business Law</li>
+        <li>Criminal Justice</li>
+      </ul>
+    </div>
+
+    <div class="school-card business">
+      <div class="number">04</div>
+      <h3>School of Business</h3>
+      <ul>
+        <li>Accounting</li>
+        <li>Finance</li>
+        <li>Marketing</li>
+      </ul>
+    </div>
+
+    <div class="school-card architecture">
+      <div class="number">05</div>
+      <h3>School of Architecture</h3>
+      <ul>
+        <li>Architecture</li>
+        <li>Urban Planning</li>
+        <li>Landscape Architecture</li>
+      </ul>
+    </div>
+
+    <div class="school-card data">
+      <div class="number">06</div>
+      <h3>School of Data Science</h3>
+      <ul>
+        <li>Data Analytics</li>
+        <li>Machine Learning &amp; Artificial Intelligence</li>
+        <li>Data Ethics &amp; Policy</li>
+        <li>Biomedical Data Science</li>
+      </ul>
+    </div>
+
+    <div class="school-card education">
+      <div class="number">07</div>
+      <h3>School of Education &amp; Human Development</h3>
+      <ul>
+        <li>Teacher Education &amp; Curriculum</li>
+        <li>Educational Psychology</li>
+        <li>Human Development &amp; Family Sciences</li>
+      </ul>
+    </div>
+
+    <div class="school-card humanities">
+      <div class="number">08</div>
+      <h3>School of Humanities &amp; Arts</h3>
+      <ul>
+        <li>World Languages &amp; Literatures</li>
+        <li>Music</li>
+        <li>Philosophy</li>
+      </ul>
+    </div>
+
+    <div class="school-card communications">
+      <div class="number">09</div>
+      <h3>School of Communications &amp; Media</h3>
+      <ul>
+        <li>Journalism</li>
+        <li>Public Relations &amp; Advertising</li>
+        <li>Media Studies &amp; Digital Production</li>
+      </ul>
+    </div>
+
+    <div class="school-card theology">
+      <div class="number">10</div>
+      <h3>School of Theology</h3>
+      <ul>
+        <li>Biblical Studies</li>
+        <li>Practical Theology</li>
+        <li>Historical &amp; Systematic Theology</li>
+      </ul>
+    </div>
+
+    <div class="school-card policy">
+      <div class="number">11</div>
+      <h3>School of Public Policy</h3>
+      <ul>
+        <li>Public Policy</li>
+        <li>Political Science &amp; Government</li>
+        <li>International Affairs</li>
+      </ul>
+    </div>
+
+    <div class="school-card arts">
+      <div class="number">12</div>
+      <h3>School of Arts &amp; Sciences</h3>
+      <ul>
+        <li>Art &amp; Art History</li>
+        <li>Justice &amp; Society</li>
+        <li>Physical Sciences</li>
+        <li>Performing Arts</li>
+      </ul>
+    </div>
+
+    <div class="school-card policy">
+      <div class="number">13</div>
+      <h3>School of Public &amp; International Affairs</h3>
+      <ul>
+        <li>Public Administration</li>
+        <li>Urban &amp; Environmental Policy</li>
+        <li>Leadership</li>
+      </ul>
+    </div>
+
+    <div class="school-card nursing">
+      <div class="number">14</div>
+      <h3>School of Nursing</h3>
+      <ul>
+        <li>Health &amp; Community Systems</li>
+        <li>Acute &amp; Tertiary Care</li>
+        <li>Health Promotion &amp; Development</li>
+      </ul>
+    </div>
+
+    <div class="school-card biological">
+      <div class="number">15</div>
+      <h3>School of Biological &amp; Environmental Sciences</h3>
+      <ul>
+        <li>Biology</li>
+        <li>Environmental Science</li>
+        <li>Ecology &amp; Conservation Biology</li>
+        <li>Climate Science &amp; Sustainability</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== PAGE 2: FOCUS AREAS ==================== -->
+<span class="section-anchor" id="page2"></span>
+<section class="page section-medicine" style="background: linear-gradient(180deg, rgba(178,201,173,0.08) 0%, rgba(212,230,241,0.12) 50%, rgba(143,184,176,0.08) 100%);">
+  <div class="page-header">
+    <h1>Focus Areas</h1>
+    <p class="subtitle">Department Details Grouped by School of Learning</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="focus-section">
+
+    <!-- SCHOOL OF MEDICINE -->
+    <div class="school-focus medicine">
+      <h2>School of Medicine</h2>
+
+      <div class="dept-block medicine">
+        <h3>Surgery</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          The Department of Surgery operates across three core pillars: clinical care, medical education, and biomedical research. Clinical care spans a wide range of subcategories and surgical scenarios, from trauma and critical care to oncology and transplant procedures. The educational mission focuses on training students to become experienced surgeons through structured residency programs at affiliated hospitals. Surgeon scientists also contribute to groundbreaking biomedical research, developing new techniques and technologies that shape the future of operative medicine.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>Gross Anatomy, Surgical Pathology, Systemic Physiology</li>
+              <li>Core Surgery Clerkship (8–12 week clinical rotation)</li>
+              <li>Surgical Critical Care &amp; Trauma</li>
+              <li>Internships and Electives</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Procedural Proficiency (knot tying, suturing, instrumentation)</li>
+              <li>Patient Management and Complication Handling</li>
+              <li>Cognitive and Interpersonal Communication</li>
+              <li>Procedural Simulations</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Excellence in Patient Care</li>
+              <li>Comprehensive Medical Knowledge</li>
+              <li>Professionalism and Systems-Based Practice</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Subspecialty focus on specific organ systems</li>
+              <li>Goal-oriented tracks (e.g., plastic surgery, neurosurgery)</li>
+              <li>Robotic and minimally invasive surgical techniques</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="dept-block medicine">
+        <h3>Biochemistry &amp; Molecular Genetics</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          This department emphasizes research-driven inquiry and the advanced use of technology. Faculty and students investigate cancer biology, gene regulation, computational biology, structural biology, and drug design. The curriculum integrates foundational chemical and biological sciences with specialized molecular study, preparing graduates for careers in academic research, pharmaceutical development, and translational medicine.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>General &amp; Organic Chemistry, Cell Biology, General Genetics</li>
+              <li>Macromolecular Structure, Molecular Biology</li>
+              <li>Cellular Metabolism, Advanced Molecular Genetics</li>
+              <li>Molecular Biology of Cancer, Enzymology, Bioinformatics</li>
+              <li>Receptors &amp; Signal Transduction, Pharmacology</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Laboratory Techniques and Protocols</li>
+              <li>Research Design and Execution</li>
+              <li>Communication and Collaboration</li>
+              <li>Data Analysis and Interpretation</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Formulate Testable Scientific Hypotheses</li>
+              <li>Interpret and Analyze Complex Data Sets</li>
+              <li>Conduct Independent Experiments</li>
+              <li>Understand Ethical Standards in Research</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Cancer Biology and Gene Regulation</li>
+              <li>Computational Biology and Structural Biology</li>
+              <li>Drug Design and Development</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHOOL OF ENGINEERING -->
+    <div class="school-focus engineering">
+      <h2>School of Engineering &amp; Applied Sciences</h2>
+
+      <div class="dept-block engineering">
+        <h3>Biomedical Engineering</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          Biomedical Engineering merges traditional engineering principles of physics and mathematics with biological sciences and medicine, using technology and engineering methodologies to address medical challenges. The discipline incorporates technology at every level of cellular organization and develops a wide range of medical instruments and devices. This interdisciplinary approach prepares students for careers in both engineering and medical fields, bridging the gap between physical sciences and human health.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>Calculus I–III, Differential Equations, Linear Algebra</li>
+              <li>General &amp; Organic Chemistry, Physics</li>
+              <li>Engineering Statics, Dynamics, Circuit Analysis</li>
+              <li>Thermodynamics, Computer Programming</li>
+              <li>Biomechanics, Biomaterials, Bioinstrumentation</li>
+              <li>Physiology for Engineers, Capstone Design</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Technical Engineering Proficiency</li>
+              <li>Analytical and Quantitative Thinking</li>
+              <li>Communication and Teamwork</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Apply Engineering, Biology, and Math Principles to Bio Problems</li>
+              <li>Analyze Complex Biological and Engineering Data</li>
+              <li>Design Solutions Within Defined Constraints</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Biomechanics</li>
+              <li>Tissue Engineering</li>
+              <li>Medical Imaging</li>
+              <li>Bioinstrumentation and Sensors</li>
+              <li>Computational Biology and Bioinformatics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="dept-block engineering">
+        <h3>Electrical &amp; Computer Engineering</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          Electrical and Computer Engineering encompasses the design and development of electrical systems, circuits, and computing hardware. The field has increasingly integrated artificial intelligence, data science, and sustainable technology into its curriculum and research. With broad applications spanning semiconductors, telecommunications, robotics, and power systems, this department offers one of the most versatile career pipelines in engineering.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>Circuits and Electronics</li>
+              <li>Signals and Systems</li>
+              <li>Digital Logic Systems</li>
+              <li>Microprocessors</li>
+              <li>Electromagnetics</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Programming and Software Development</li>
+              <li>Design and Simulation</li>
+              <li>Systems Engineering</li>
+              <li>Data Analysis</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Problem Formulation and Resolution</li>
+              <li>System-Level Design and Integration</li>
+              <li>Experimental Methodology</li>
+              <li>Collaborative Teamwork</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Computer Systems and Hardware Design</li>
+              <li>Communications and Networking</li>
+              <li>Power and Energy Systems</li>
+              <li>Control Systems and Robotics</li>
+              <li>Electromagnetics and Applied Physics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHOOL OF LAW -->
+    <div class="school-focus law">
+      <h2>School of Law</h2>
+
+      <div class="dept-block law">
+        <h3>Corporate &amp; Business Law</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          Corporate and Business Law examines the legal rules governing commercial activity. Corporate Law and Governance addresses the comprehensive rules regarding nearly every aspect of companies, including formation, taxation, mergers and acquisitions, securities regulation, raising capital, and antitrust and competition law. Students develop skills in contract drafting, legal analysis, risk management, and negotiation.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>Business Associations &amp; Corporations</li>
+              <li>Contracts and Sales</li>
+              <li>Securities Regulation</li>
+              <li>Corporate Governance and Finance</li>
+              <li>Labor and Income Law</li>
+              <li>Regulatory Compliance</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Contract Drafting and Review</li>
+              <li>Legal Analysis and Reasoning</li>
+              <li>Risk Management</li>
+              <li>Negotiation and Communication</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Sound Legal and Ethical Reasoning</li>
+              <li>Professional Responsibility</li>
+              <li>Readiness for Practice</li>
+              <li>Business-Strategy Alignment</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Corporate Law and Governance</li>
+              <li>Securities and Finance</li>
+              <li>Commercial Law and Bankruptcy</li>
+              <li>Tax Law, Technology Law</li>
+              <li>Employment and Labor Law</li>
+              <li>Antitrust and Competition</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="dept-block law">
+        <h3>Family &amp; Domestic Law</h3>
+        <p style="margin-bottom:16px; color:var(--medium-text); font-size:0.95rem; line-height:1.7;">
+          Family and Domestic Law addresses the legal rules, social policies, and societal frameworks governing intimate relationships and the family unit. Key topics include marriage and divorce, parent-child relationships, domestic violence, and how various family dynamics shape and are shaped by legislation. The field blends insights from sociology, psychology, economics, and social work to serve families and communities.
+        </p>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Courses</h4>
+            <ul>
+              <li>Marriage, Divorce, and Family Formation</li>
+              <li>Child Support, Custody, and Juvenile Law</li>
+              <li>Domestic Violence and the Law</li>
+              <li>Adoption and Reproductive Technology</li>
+              <li>Estate and Tax Planning in Divorce</li>
+              <li>Firsthand Clinical Experience</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Skills</h4>
+            <ul>
+              <li>Interviewing and Counseling</li>
+              <li>Negotiation and Mediation</li>
+              <li>Legal Analysis</li>
+              <li>Document Drafting and Trial Practice</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Learning Outcomes</h4>
+            <ul>
+              <li>Legal Comprehension in Family Contexts</li>
+              <li>Creative Problem Solving</li>
+              <li>Professionalism and Empathy</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Specializations</h4>
+            <ul>
+              <li>Matrimonial and Divorce Law</li>
+              <li>Child and Juvenile Law</li>
+              <li>Elder Law</li>
+              <li>Domestic Violence</li>
+              <li>Reproductive Technology</li>
+              <li>International and Comparative Family Law</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== PAGE 3: COMPARISON ==================== -->
+<span class="section-anchor" id="page3"></span>
+<section class="page" style="background: linear-gradient(180deg, rgba(212,230,241,0.1) 0%, var(--cream) 100%);">
+  <div class="page-header">
+    <h1>Comparative Analysis</h1>
+    <p class="subtitle">Curriculum, Strengths, Opportunities, Trends &amp; Geographic Influences</p>
+    <div class="divider"></div>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:18%;">Category</th>
+        <th style="width:27%;">Surgery</th>
+        <th style="width:27%;">Biochemistry &amp; Molecular Genetics</th>
+        <th style="width:28%;">Biomedical Engineering</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="category-header">
+        <td colspan="4">School of Medicine &amp; Engineering</td>
+      </tr>
+      <tr>
+        <td>Curriculum</td>
+        <td>Gross anatomy, surgical pathology, systemic physiology; core surgery clerkship (8–12 weeks); critical care &amp; trauma rotations; electives and internships</td>
+        <td>General &amp; organic chemistry, cell biology, genetics; macromolecular structure, molecular biology, cellular metabolism; electives in cancer biology, enzymology, bioinformatics, pharmacology</td>
+        <td>Calculus I–III, differential equations, linear algebra, physics, chemistry; engineering statics, dynamics, circuit analysis, thermodynamics; biomechanics, biomaterials, physiology for engineers, capstone design</td>
+      </tr>
+      <tr>
+        <td>Key Skills</td>
+        <td>Procedural proficiency, patient management, cognitive and interpersonal communication, procedural simulation</td>
+        <td>Laboratory techniques, research design, data analysis, scientific communication and collaboration</td>
+        <td>Technical engineering proficiency, analytical and quantitative thinking, systems design, programming</td>
+      </tr>
+      <tr>
+        <td>Learning Outcomes</td>
+        <td>Patient care excellence, comprehensive medical knowledge, professionalism, systems-based practice</td>
+        <td>Hypothesis formulation, data interpretation, independent experimentation, ethical research conduct</td>
+        <td>Apply engineering principles to bio problems, analyze complex data, design solutions within constraints</td>
+      </tr>
+      <tr>
+        <td>Department Strengths</td>
+        <td>Extremely strong at Harvard, Johns Hopkins, Stanford, UCSF. Emphasis on robotic/minimally invasive techniques, trauma, oncology, transplant surgery. High case volumes in residency.</td>
+        <td>Elite at Harvard, MIT, Stanford, UC Berkeley, Yale. Cutting-edge basic research in genetics, molecular biology, biophysics. High publication impact and funding.</td>
+        <td>Johns Hopkins dominates #1 for decades; MIT, Stanford, Georgia Tech, Duke, UCSD lead. Device design, tissue engineering, regenerative medicine. Strong NIH and industry funding.</td>
+      </tr>
+      <tr>
+        <td>Unique Features</td>
+        <td>Hands-on residency with high case volumes; leadership in academic surgery; strong integration of research and clinical practice</td>
+        <td>Heavy focus on lab-based discovery; MD/PhD pathways; translational potential from bench to bedside; foundational role in medical curricula</td>
+        <td>Deep integration with medical schools and hospitals; clinician-engineer collaborations; design studios and capstone projects; med-device entrepreneurship</td>
+      </tr>
+      <tr>
+        <td>Internship Opportunities</td>
+        <td>Hospital surgical department intern, surgical research assistant, OR observation program, clinical shadowing, medical scribe, patient care technician</td>
+        <td>Biotechnology lab intern, genetic research assistant, pharmaceutical research intern, molecular biology lab technician, genomics data analysis intern, clinical laboratory intern</td>
+        <td>Medical device development intern, biomedical research intern, prosthetics and rehabilitation engineering, clinical engineering, biotech engineering, medical imaging technology</td>
+      </tr>
+      <tr>
+        <td>Evolution Over Time</td>
+        <td>Trend toward specialization with fewer general surgeons; adoption of robotic and minimally invasive techniques; changing demographics and leadership; clinical productivity pressures</td>
+        <td>Advances in technology pushing into new applications; increasing interdisciplinary collaboration; curriculum updates; modernized training and programs</td>
+        <td>Expanded curriculum with targeted specialization tracks; shift from device construction toward gene editing; integration of AI and technology; growing interdisciplinary connections</td>
+      </tr>
+      <tr>
+        <td>Geographic Influences</td>
+        <td>Clustering in major cities and metropolitan areas; spillover benefits to local economies; workforce boosts; less access in rural regions</td>
+        <td>Clustered in large metropolitan research hubs; better access to funding and collaborative networks</td>
+        <td>Clusters around major research institutions and cities; secures grants, attracts talent, fosters startups; strong industry partnerships; limited presence in rural areas</td>
+      </tr>
+
+      <tr class="category-header">
+        <td colspan="4">Additional Departments</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">Electrical &amp; Computer Engineering</td>
+        <td colspan="3">Courses: circuits, signals, digital logic, microprocessors, electromagnetics. Skills: programming, design/simulation, systems engineering, data analysis. Strengths: AI/ML, semiconductors, embedded systems, quantum computing, power systems. Global leaders: MIT, Stanford, UC Berkeley, Georgia Tech. Geographic hub: Silicon Valley. Trends: integration of AI and data science, rise of interdisciplinary hardware systems, shift toward sustainable technology.</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">Corporate &amp; Business Law</td>
+        <td colspan="3">Courses: business associations, contracts, securities regulation, corporate governance, labor law, regulatory compliance. Skills: contract drafting, legal analysis, risk management, negotiation. Strengths: transactions, M&amp;A, finance, IP, compliance. Leaders: Harvard, NYU, Stanford, Penn, Columbia. Trends: technology and AI integration, multidisciplinary approaches, experiential learning, focus on ESG (Environmental, Social, Governance).</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">Family &amp; Domestic Law</td>
+        <td colspan="3">Courses: marriage/divorce foundations, child-centered courses, domestic violence, adoption, reproductive technology, estate planning. Skills: interviewing/counseling, mediation, analysis, trial practice. Strengths: divorce, custody, child welfare, family policy, advocacy. Strong at NYU, UVA, Albany, UMKC. Trends: expanded definition of family, technology integration, longer lifespans driving new legal needs, interdisciplinary collaboration, increased focus on soft skills.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Geographic Trends Summary -->
+  <div style="max-width:1000px; margin: 40px auto 0;">
+    <div class="school-focus" style="border-left: 4px solid var(--muted-teal);">
+      <h2 style="font-size:1.3rem; color: var(--muted-teal); border-bottom-color: var(--muted-teal);">Geographic Trends &amp; Observations</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div class="info-card">
+          <h4>Urban Clustering</h4>
+          <ul>
+            <li>Medicine, engineering, and law programs cluster heavily in major metropolitan areas</li>
+            <li>These hubs attract funding, faculty, and industry partnerships</li>
+            <li>Rural and remote regions face significant access gaps</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Industry Shaping</h4>
+          <ul>
+            <li>Local economies directly shape academic strengths (e.g., Silicon Valley for ECE, financial hubs for corporate law)</li>
+            <li>Regional industries drive curriculum relevance and internship pipelines</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>State-Level Variation</h4>
+          <ul>
+            <li>State laws influence family law curriculum and practice across regions</li>
+            <li>North American agglomeration creates specialized research networks but also geographic disparities in resources and training quality</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PAGE 4: REFLECTION ==================== -->
+<span class="section-anchor" id="page4"></span>
+<section class="page" style="background: linear-gradient(180deg, rgba(178,201,173,0.08) 0%, rgba(245,230,211,0.2) 100%);">
+  <div class="page-header">
+    <h1>Reflection</h1>
+    <p class="subtitle">Personal Insights on Academic Exploration</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="reflection-container">
+    <div class="reflection-card">
+      <p>
+        Based on the research conducted, the academic departments that interest me the most are Biochemistry and Molecular Genetics as well as Biomedical Engineering. These two fields align closely with my current interests in science, particularly biological areas, as well as the innovation, design, and research involved in developing new technologies. I believe these subjects blend multiple academic disciplines and serve as a bridge between the physical sciences, engineering, and medicine.
+      </p>
+      <p>
+        Something that thoroughly surprised me was the extent of interdisciplinary connection and cooperation across these fields. As modern education becomes less focused on individual topics and departments, technological innovation allows for greater incorporation of diverse ideas and knowledge to advance each discipline. Another aspect I was previously unaware of was the organizational structure behind how universities are arranged. This includes the subdivisions of colleges, schools, departments, and majors, as well as the various types of degrees and steps, such as research and internships, that are needed to progress academically in higher education.
+      </p>
+      <p>
+        Academic departments and fields evolve constantly through multiple factors. Through this research, the most common drivers proved to be funding, new technology, breakthroughs in information, and changing worldviews both socially and economically. A key pattern across these fields is the prevalence of further specialization and targeted tracks within departments. This is driven by new technologies, such as robotics in medicine or the introduction of artificial intelligence in data sciences and engineering. Another factor is a shift in worldviews, as more women enter higher education and fill roles historically held by men, and globalization allows more people to have access. These changes lead to greater innovation beyond any single field and foster deeper integration between academic schools and departments.
+      </p>
+      <p>
+        This research has brought to my attention that simply following the standard public school curriculum is not sufficient to provide a thorough understanding of the academic structure of higher education. However, I also recognize that this research alone is not exhaustive, as I have only begun to explore this system and the information behind it. I believe the necessary next steps include further research to gain a broader understanding, attending programs to experience them firsthand, and pursuing personal projects to explore different academic departments in greater depth.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PAGE 5: SOURCES ==================== -->
+<span class="section-anchor" id="page5"></span>
+<section class="page" style="background: linear-gradient(180deg, rgba(212,230,241,0.08) 0%, rgba(178,201,173,0.06) 100%);">
+  <div class="page-header">
+    <h1>Sources</h1>
+    <p class="subtitle">References &amp; Further Reading</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="sources-container">
+    <ul class="source-list">
+      <li><a href="https://www.usnews.com/best-graduate-schools" target="_blank">U.S. News &amp; World Report: Best Graduate Schools</a></li>
+      <li><a href="https://www.forbes.com/top-colleges/" target="_blank">Forbes: Top Colleges</a></li>
+      <li><a href="https://www.virginia.edu/academics/" target="_blank">University of Virginia: Academics</a></li>
+      <li><a href="https://www.business.uconn.edu/departments/" target="_blank">UConn School of Business: Departments</a></li>
+      <li><a href="https://gradschool.princeton.edu/academics/degrees-requirements/fields-study" target="_blank">Princeton Graduate School: Fields of Study</a></li>
+      <li><a href="https://datascience.virginia.edu/degrees/bsds/academics" target="_blank">UVA School of Data Science: BSDS Academics</a></li>
+      <li><a href="https://www.law.nyu.edu/academics/areasofstudy" target="_blank">NYU School of Law: Areas of Study</a></li>
+      <li><a href="https://engineering.virginia.edu/undergraduate-study/current-undergrads/degree-information/majors-and-minors" target="_blank">UVA School of Engineering: Majors and Minors</a></li>
+      <li><a href="https://humanities.rice.edu/departments-majors-minors-centers-and-programs" target="_blank">Rice University Humanities: Departments &amp; Programs</a></li>
+      <li><a href="https://www.fordham.edu/academics/departments/communication-and-media-studies/" target="_blank">Fordham University: Communication &amp; Media Studies</a></li>
+      <li><a href="https://www.uu.edu/programs/stm/academics/undergraduate/" target="_blank">University of the Underground: STM Undergraduate Programs</a></li>
+      <li><a href="https://college.georgetown.edu/academics/departments-and-programs/" target="_blank">Georgetown College: Departments &amp; Programs</a></li>
+      <li><a href="https://catalog.unc.edu/undergraduate/programs-study/public-policy-major-ba/" target="_blank">UNC: Public Policy Major (B.A.)</a></li>
+      <li><a href="https://spia.uga.edu/degree/bachelor-of-arts-ab-in-international-affairs-2/" target="_blank">UGA SPIA: B.A. in International Affairs</a></li>
+      <li><a href="https://philosophy.columbian.gwu.edu/" target="_blank">George Washington University: Philosophy Department</a></li>
+      <li><a href="https://www.jefferson.edu/academics/colleges-schools-institutes/architecture-and-the-built-environment.html" target="_blank">Jefferson University: Architecture &amp; the Built Environment</a></li>
+      <li><a href="https://www.nursing.pitt.edu/about/departments/academic-departments/" target="_blank">University of Pittsburgh School of Nursing: Academic Departments</a></li>
+      <li><a href="https://www.mtu.edu/biomedical/department/what-is/" target="_blank">Michigan Tech: What Is Biomedical Engineering?</a></li>
+      <li><a href="https://engineering.nyu.edu/academics/departments/biomedical-engineering" target="_blank">NYU Tandon: Biomedical Engineering Department</a></li>
+      <li><a href="https://bulletins.psu.edu/university-course-descriptions/undergraduate/bmb/" target="_blank">Penn State: Biochemistry &amp; Molecular Biology Courses</a></li>
+      <li><a href="https://chicago.medicine.uic.edu/bmg/bmg-research/" target="_blank">UIC Chicago Medicine: Biochemistry &amp; Molecular Genetics Research</a></li>
+      <li><a href="https://medicine.louisville.edu/academics-programs/academic-departments/biochemistry-molecular-genetics/about" target="_blank">University of Louisville: Biochemistry &amp; Molecular Genetics</a></li>
+      <li><a href="https://rockford.medicine.uic.edu/depts/academic-clinical/surgery-and-surgical-specialties/" target="_blank">UIC Rockford: Surgery &amp; Surgical Specialties</a></li>
+      <li><a href="https://www.med.upenn.edu/psom/academic-departments.html" target="_blank">Penn Medicine: Academic Departments</a></li>
+      <li><a href="https://surgery.duke.edu/about-department/seeds/areas-focus" target="_blank">Duke Surgery: Areas of Focus</a></li>
+      <li><a href="https://med.nyu.edu/departments-institutes/surgery/" target="_blank">NYU Langone: Department of Surgery</a></li>
+      <li><a href="https://surgery.duke.edu/education-and-training/training-sites-and-laboratories/surgical-education-and-activities-lab/curriculum" target="_blank">Duke Surgery: Education &amp; Training Curriculum</a></li>
+      <li><a href="https://ece.umd.edu/undergraduate/degrees/bs-electrical-engineering/specializations" target="_blank">UMD: B.S. Electrical Engineering Specializations</a></li>
+      <li><a href="https://engineering.vanderbilt.edu/departments/electrical-computer-engineering/" target="_blank">Vanderbilt Engineering: Electrical &amp; Computer Engineering</a></li>
+      <li><a href="https://www.bmu.edu.in/social/scope-of-electronics-and-computer-engineering/" target="_blank">BMU: Scope of Electronics &amp; Computer Engineering</a></li>
+      <li><a href="https://law.ucla.edu/academics/degrees/jd-program/jd-specializations/business-law-policy-specializations/business-law-policy-specialization-requirements" target="_blank">UCLA Law: Business Law &amp; Policy Specialization</a></li>
+      <li><a href="https://www.law.nyu.edu/academicservices/advising/academicadvising/business" target="_blank">NYU Law: Business Law Academic Advising</a></li>
+      <li><a href="https://law.nd.edu/academics/programs-of-study/business-law/" target="_blank">Notre Dame Law: Business Law Program</a></li>
+      <li><a href="https://www.law.virginia.edu/news/202111/which-courses-should-you-take-law-school" target="_blank">UVA Law: Which Courses to Take in Law School</a></li>
+      <li><a href="https://www.collegesoflaw.edu/blog/2018/11/06/different-fields-of-law-explained/" target="_blank">Colleges of Law: Different Fields of Law Explained</a></li>
+      <li><a href="https://www.law.virginia.edu/academics/jd-program-learning-outcomes" target="_blank">UVA Law: J.D. Program Learning Outcomes</a></li>
+      <li><a href="https://law.richmond.edu/academics/curriculum/choosing_courses/planning/family.html" target="_blank">University of Richmond School of Law: Family Law Planning</a></li>
+      <li><a href="https://www.law.nyu.edu/academicservices/advising/academicadvising/family" target="_blank">NYU Law: Family Law Academic Advising</a></li>
+      <li><a href="https://law.indiana.edu/academics/area-of-focus/family-law.html" target="_blank">Indiana University Maurer School of Law: Family Law Focus</a></li>
+    </ul>
+  </div>
+
+  <div class="download-actions">
+    <button class="download-btn" onclick="window.print()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download as PDF
+    </button>
+    <p style="margin-top:12px; font-size:0.8rem; color:var(--warm-gray);">Use your browser's print dialog to save as PDF or print directly.</p>
+  </div>
+</section>
+
+<script>
+// Smooth scrolling and active nav
+document.querySelectorAll('.nav a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Active nav highlight on scroll
+const sections = document.querySelectorAll('.section-anchor');
+const navLinks = document.querySelectorAll('.nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (window.scrollY >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
